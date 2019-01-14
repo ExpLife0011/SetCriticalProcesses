@@ -100,11 +100,11 @@ HANDLE get_process(IN DWORD pid, DWORD access)
 BOOL set_proc_critical(HANDLE hProc)
     {
 
-    ULONG count = 1;
-    if (NT_SUCCESS(cNtSetInformationProcess(hProc,
-							ProcessBreakOnTermination,
-							&count,
-							sizeof(ULONG))))
+    ULONG ProcessInformation = 1;
+    if (NT_SUCCESS(NtSetInformationProcess(hProc,
+						ProcessBreakOnTermination,
+						&ProcessInformation,
+						sizeof(ULONG))))
 			return TRUE;
 
 
