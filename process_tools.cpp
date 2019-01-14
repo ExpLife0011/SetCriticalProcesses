@@ -102,9 +102,9 @@ BOOL set_proc_critical(HANDLE hProc)
 
     ULONG count = 1;
     if (NT_SUCCESS(cNtSetInformationProcess(hProc,
-							ProcessBreakOnTermination,		// ThreadBreakOnTermination структуре PROCESSINFOCLASS
-    						&count,
-    						sizeof(ULONG))))
+							ProcessBreakOnTermination,
+							&count,
+							sizeof(ULONG))))
 			return TRUE;
 
 
