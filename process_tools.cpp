@@ -22,10 +22,10 @@ BOOL set_privileges(LPCTSTR szPrivName)
 	{
 
 #ifdef DEBUG
-			std::cout << "LookupPrivilegeValue error: " << GetLastError() << std::endl;
+		std::cout << "LookupPrivilegeValue error: " << GetLastError() << std::endl;
 #endif
-			CloseHandle(hToken);
-			return FALSE;
+		CloseHandle(hToken);
+		return FALSE;
 	}
 
 	if (!AdjustTokenPrivileges(hToken, FALSE, &token_priv, sizeof(token_priv), NULL, NULL))
@@ -98,19 +98,19 @@ HANDLE get_process(IN DWORD pid, DWORD access)
 }
 
 BOOL set_proc_critical(HANDLE hProc)
-    {
+{
 
-    ULONG ProcessInformation = 1;
-    if (NT_SUCCESS(NtSetInformationProcess(hProc,
-						ProcessBreakOnTermination,
-						&ProcessInformation,
-						sizeof(ULONG))))
-			return TRUE;
+	ULONG ProcessInformation = 1;
+	if (NT_SUCCESS(NtSetInformationProcess(hProc,
+		ProcessBreakOnTermination,
+		&ProcessInformation,
+		sizeof(ULONG))))
+		return TRUE;
 
 
 #ifdef DEBUG
 	std::cout << "NtSetInformationProcess error: " << GetLastError() << std::endl;
 #endif
-			return FALSE;
+	return FALSE;
 
-    }
+}
