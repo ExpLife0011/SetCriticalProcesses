@@ -114,3 +114,18 @@ BOOL set_proc_critical(HANDLE hProc)
 	return FALSE;
 
 }
+
+BOOL is_critical(IN HANDLE hProcess)
+{
+	BOOL critical;
+
+	if (!IsProcessCritical(hProcess, &critical))
+	{
+#ifdef _DEBUG
+		printf("IsProcessCritical error:  %d.\n", GetLastError());
+#endif
+	}
+
+
+	return critical;
+}
