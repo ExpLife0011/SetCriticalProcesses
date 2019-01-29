@@ -9,6 +9,14 @@ int main(int argc, char **argv)
 		printf("SE_DEBUG_NAME is granted! \n");
 
 	if (argc == 2)
+
+		if (is_critical(get_process(get_pid_from_name(argv[1]), PROCESS_ALL_ACCESS)))
+		{
+			printf("Process is already critical\n");
+			return 0;
+
+		}
+		else
 		set_proc_critical(get_process(get_pid_from_name(argv[1]), PROCESS_ALL_ACCESS));
 
 	system("pause");
