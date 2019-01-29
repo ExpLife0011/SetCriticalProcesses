@@ -1,13 +1,17 @@
-#include <Windows.h>
 #include "process_tools.h"
 
 int main(int argc, char **argv)
 {
-	const char *process = "firefox.exe";
+	printf("Set critical process\n");
+	printf("Usage: critical.exe <process name>\n");
 
-	if (set_privileges(SE_DEBUG_NAME)) printf("SE_DEBUG_NAME is granted! \n");
+	if (set_privileges(SE_DEBUG_NAME))
+		printf("SE_DEBUG_NAME is granted! \n");
 
-	set_proc_critical(get_process_handle(get_pid_from_name(process), PROCESS_ALL_ACCESS));
+	if (argc == 2)
+		set_proc_critical(get_process(get_pid_from_name(argv[1]), PROCESS_ALL_ACCESS));
+
+	system("pause");
 
 	return 0;
 }

@@ -1,3 +1,5 @@
+#include "process_tools.h"
+
 // Set privileges. For example: set_privileges(SE_DEBUG_NAME);
 //
 BOOL set_privileges(LPCTSTR szPrivName)
@@ -11,8 +13,8 @@ BOOL set_privileges(LPCTSTR szPrivName)
 
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken))
 	{
-#ifdef DEBUG
-		std::cout << "OpenProcessToken error: " << GetLastError() << std::endl;
+#ifdef _DEBUG
+		printf("OpenProcessToken error:  %d.\n", GetLastError());
 #endif
 
 		return FALSE;
@@ -21,8 +23,8 @@ BOOL set_privileges(LPCTSTR szPrivName)
 	if (!LookupPrivilegeValue(NULL, szPrivName, &token_priv.Privileges[0].Luid))
 	{
 
-#ifdef DEBUG
-		std::cout << "LookupPrivilegeValue error: " << GetLastError() << std::endl;
+#ifdef _DEBUG
+		printf("LookupPrivilegeValue error:  %d.\n", GetLastError());
 #endif
 		CloseHandle(hToken);
 		return FALSE;
@@ -31,8 +33,8 @@ BOOL set_privileges(LPCTSTR szPrivName)
 	if (!AdjustTokenPrivileges(hToken, FALSE, &token_priv, sizeof(token_priv), NULL, NULL))
 	{
 
-#ifdef DEBUG
-		std::cout << "AdjustTokenPrivileges error: " << GetLastError() << std::endl;
+#ifdef _DEBUG
+		printf("AdjustTokenPrivileges error:  %d.\n", GetLastError());
 #endif
 
 		CloseHandle(hToken);
@@ -45,12 +47,12 @@ BOOL set_privileges(LPCTSTR szPrivName)
 
 DWORD get_pid_from_name(IN const char * pProcName)
 {
-	HANDLE snapshot_proc = cCreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	HANDLE snapshot_proc = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if (snapshot_proc == INVALID_HANDLE_VALUE)
 	{
 
-#ifdef DEBUG
-		std::cout << "CreateToolhelp32Snapshot error: " << GetLastError() << std::endl;
+#ifdef _DEBUG
+		printf("CreateToolhelp32Snapshot error:  %d.\n", GetLastError());
 #endif
 
 		return 0;
@@ -58,7 +60,6 @@ DWORD get_pid_from_name(IN const char * pProcName)
 
 
 	PROCESSENTRY32 ProcessEntry;
-	THREADENTRY32 ThreadEntry;
 	DWORD pid;
 	ProcessEntry.dwSize = sizeof(ProcessEntry);
 
@@ -67,29 +68,29 @@ DWORD get_pid_from_name(IN const char * pProcName)
 	{
 		while (Process32Next(snapshot_proc, &ProcessEntry))
 		{
-			if (!stricmp(ProcessEntry.szExeFile, pProcName))
+			if (!_stricmp(ProcessEntry.szExeFile, pProcName))
 			{
 				pid = ProcessEntry.th32ProcessID;
 
-				cCloseHandle(snapshot_proc);
+				CloseHandle(snapshot_proc);
 				return pid;
 			}
 		}
 	}
 
-	cCloseHandle(snapshot_proc);
+	CloseHandle(snapshot_proc);
 	return 0;
 }
 
 HANDLE get_process(IN DWORD pid, DWORD access)
 {
-	HANDLE hProcess = cOpenProcess(access, FALSE, pid);
+	HANDLE hProcess = OpenProcess(access, FALSE, pid);
 
 	if (!hProcess)
 	{
 
-#ifdef DEBUG
-		std::cout << "OpenProcess error: " << GetLastError() << std::endl;
+#ifdef _DEBUG
+		printf("OpenProcess error:  %d.\n", GetLastError());
 #endif
 		return FALSE;
 	}
@@ -101,15 +102,14 @@ BOOL set_proc_critical(HANDLE hProc)
 {
 
 	ULONG ProcessInformation = 1;
-	if (NT_SUCCESS(NtSetInformationProcess(hProc,
+	if (NT_SUCCESS(cNtSetInformationProcess(hProc,
 		ProcessBreakOnTermination,
 		&ProcessInformation,
 		sizeof(ULONG))))
 		return TRUE;
 
-
-#ifdef DEBUG
-	std::cout << "NtSetInformationProcess error: " << GetLastError() << std::endl;
+#ifdef _DEBUG
+	printf("NtSetInformationProcess error:  %d.\n", GetLastError());
 #endif
 	return FALSE;
 
