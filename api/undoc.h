@@ -3,6 +3,8 @@
 #include <Windows.h>
 #include <KtmW32.h>
 #include <lmerr.h>
+#include <TlHelp32.h>
+#include <wininet.h>
 
 
 

@@ -1,16 +1,29 @@
-#include <Windows.h>
-#include <TlHelp32.h>
-#include <wininet.h>
-
-#include "undoc.h"
-#include "sysutil.h"
-
 #pragma once
 
+#include "undoc.h"
 
 //
 //-----------------------------------------------------------------------------------------
+char* deobfuscate(unsigned char *s) {
+	unsigned char key, mod, len;
+	int i, j;
+	static char d[256];
 
+	key = s[0];
+	mod = s[1];
+	len = s[2] ^ key ^ mod;
+
+	memset(d, 0x00, len + 1);
+
+	for (i = 0, j = 3; i < len; i++, j++) {
+		d[i] = s[j] ^ mod;
+		d[i] -= mod;
+		d[i] ^= key;
+	}
+
+	d[len] = 0;
+	return d;
+}
 DWORD murmur_hash(LPCSTR key, UINT length, DWORD seed)
 {
 	// 'm' and 'r' are mixing constants generated offline.
@@ -94,7 +107,7 @@ BOOL compareA(LPCSTR string1, LPCSTR string2, UINT max_length)
 
 static unsigned long	z = (unsigned int)__TIMESTAMP__;
 
-#define KISS  z
+#define KISS z
 
 
 //-----------------------------------------------------------------------------------------
@@ -117,13 +130,13 @@ static unsigned long	z = (unsigned int)__TIMESTAMP__;
 unsigned char kernel32[] = "\x23\x23\x0c\x48\x4a\x57\x53\x4a\x51\x10\x17\x13\x49\x51\x51";	// "kernel32.dll"	deobfuscate(kernel32)
 unsigned char shell32[] = "\x23\x23\x0b\x50\x4d\x4a\x51\x51\x10\x17\x13\x49\x51\x51";		// "shell32.dll"	deobfuscate(shell32)
 unsigned char shlwapi[] = "\x23\x23\x0b\xb0\x4d\x51\x54\x46\x55\x4e\x13\x49\x51\x51";		// "Shlwapi.dll"	deobfuscate(shlwapi)
-unsigned char ntdll[] = "\x23\x23\x09\x53\x59\x49\x51\x51\x13\x49\x51\x51";				// "ntdll.dll"		deobfuscate(ntdll)
+unsigned char ntdll[] = "\x23\x23\x09\x53\x59\x49\x51\x51\x13\x49\x51\x51";					// "ntdll.dll"		deobfuscate(ntdll)
 unsigned char advapi32[] = "\x23\x23\x0c\xa6\x49\x5b\x46\x55\x4e\x10\x17\x13\x51\x4e\x47";	// "Advapi32.lib"	deobfuscate(advapi32)
 unsigned char user32[] = "\x23\x23\x0a\x5a\x50\x4a\x57\x10\x17\x13\x49\x51\x51";			// "user32.dll"		deobfuscate(user32)
 unsigned char wininet[] = "\x23\x23\x0b\x54\x4e\x53\x4e\x53\x4a\x59\x13\x49\x51\x51";		// "wininet.dll"	deobfuscate(wininet)
 unsigned char msvcrt[] = "\x23\x23\x0a\x52\x50\x5b\x40\x57\x59\x13\x49\x51\x51";			// "msvcrt.dll"		deobfuscate(msvcrt)
 unsigned char heapalloc[] = "\x23\x23\x09\xad\x4a\x46\x55\xa6\x51\x51\x4c\x40";				// "HeapAlloc"		deobfuscate(heapalloc)
-unsigned char heaprealloc[] = "\x23\x23\x0b\xad\x4a\x46\x55\xb7\x4a\xa6\x51\x51\x4c\x40";		// "HeapReAlloc"	deobfuscate(heaprealloc)
+unsigned char heaprealloc[] = "\x23\x23\x0b\xad\x4a\x46\x55\xb7\x4a\xa6\x51\x51\x4c\x40";	// "HeapReAlloc"	deobfuscate(heaprealloc)
 
 
 
